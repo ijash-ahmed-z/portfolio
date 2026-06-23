@@ -8,8 +8,8 @@ local_backend: true
 # To add a draft workflow later, use a published/draft field in content or configure branch workflows.
 media_folder: public/uploads
 public_folder: /uploads
-site_url: https://YOUR_PROJECT.pages.dev
-display_url: https://YOUR_PROJECT.pages.dev
+site_url: https://d3824a62.portfolio-183.pages.dev/
+display_url: https://d3824a62.portfolio-183.pages.dev/
 
 collections:
   - name: profile
