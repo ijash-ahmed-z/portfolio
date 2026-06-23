@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+const {
+  title = 'Portfolio',
+  description = 'Professional personal portfolio website.',
+  profile = null,
+  showNav = true,
+  showFooter = true
+} = Astro.props;
+
+const siteTitle = title;
+const siteDescription = description;
+const canonical = new URL(Astro.url.pathname, Astro.site || 'https://your-domain.netlify.app');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={siteDescription} />
+    <meta name="theme-color" content="#9800ff" />
+    <link rel="canonical" href={canonical.toString()} />
+    <meta property="og:title" content={siteTitle} />
+    <meta property="og:description" content={siteDescription} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{siteTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    {showNav && <Nav profile={profile} />}
+    <main id="main-content">
+      <slot />
+    </main>
+    {showFooter && <Footer profile={profile} />}
+  </body>
+</html>

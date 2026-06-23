@@ -1,0 +1,59 @@
+---
+const { profile } = Astro.props;
+const data = profile?.data || {};
+---
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <span>Email :</span>
+      {data.email ? <a href={`mailto:${data.email}`}>{data.email} ↗</a> : <strong>Add email in admin</strong>}
+    </div>
+    <div>
+      <span>Call Today :</span>
+      {data.phone ? <a href={`tel:${data.phone}`}>{data.phone}</a> : <strong>Add phone in admin</strong>}
+    </div>
+    <div>
+      <span>Social :</span>
+      <div class="socials">
+        {(data.socials || []).map((social) => <a href={social.url} target="_blank" rel="noreferrer">{social.label} ↗</a>)}
+      </div>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© {new Date().getFullYear()} {data.name || 'Portfolio'}. All rights reserved.</p>
+    <p>Built with Astro and Decap CMS.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 5rem;
+    background:
+      radial-gradient(circle at 12% 20%, rgba(255,255,255,.20), transparent 22rem),
+      linear-gradient(135deg, var(--violet), var(--violet-dark));
+    color: white;
+    padding: 3.4rem 0 2rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,.35);
+  }
+  .footer span { display: block; font-size: .92rem; opacity: .86; }
+  .footer a, .footer strong { font-weight: 900; font-size: clamp(1rem, 1.4vw, 1.2rem); overflow-wrap: anywhere; }
+  .socials { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    font-size: .95rem;
+  }
+  .footer-bottom p { margin: 0; opacity: .9; }
+  @media (max-width: 800px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; }
+  }
+</style>

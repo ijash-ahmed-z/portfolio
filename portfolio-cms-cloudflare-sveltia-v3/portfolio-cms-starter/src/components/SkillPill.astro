@@ -1,0 +1,38 @@
+---
+const { skill } = Astro.props;
+const tags = skill.data.tags || [];
+---
+<article class="skill-pill soft-card">
+  {skill.data.icon ? <img src={skill.data.icon} alt="" loading="lazy" /> : <span>{skill.data.title.slice(0, 2)}</span>}
+  <strong>{skill.data.title}</strong>
+  {skill.data.level && <small>{skill.data.level}</small>}
+  {tags.length > 0 && <em>{tags.slice(0, 2).join(' / ')}</em>}
+</article>
+
+<style>
+  .skill-pill {
+    display: grid;
+    place-items: center;
+    gap: .42rem;
+    min-width: 118px;
+    min-height: 124px;
+    padding: 1rem;
+    text-align: center;
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  .skill-pill:hover { transform: translateY(-4px); border-color: rgba(152,0,255,.35); }
+  .skill-pill img { height: 52px; object-fit: contain; }
+  .skill-pill span {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    background: rgba(152,0,255,.12);
+    color: var(--violet);
+    font-weight: 900;
+  }
+  .skill-pill strong { font-size: .96rem; line-height: 1.1; }
+  .skill-pill small { color: var(--violet); font-weight: 800; line-height: 1; }
+  .skill-pill em { color: var(--muted); font-size: .76rem; font-style: normal; line-height: 1.25; }
+</style>

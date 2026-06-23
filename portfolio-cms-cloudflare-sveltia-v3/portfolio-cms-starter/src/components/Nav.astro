@@ -1,0 +1,80 @@
+---
+const { profile } = Astro.props;
+const avatar = profile?.data?.avatar || '';
+const resume = profile?.data?.resume || '';
+---
+<header class="site-header" aria-label="Main navigation">
+  <nav class="nav-pill">
+    <a href="/" class="avatar-link" aria-label="Go to home">
+      {avatar ? <img src={avatar} alt="Portfolio avatar" width="44" height="44" /> : <span aria-hidden="true">P</span>}
+    </a>
+    <a href="/">Home</a>
+    <a href="/#about">About</a>
+    <a href="/projects/">Projects</a>
+    <a href="/resources/">Resources</a>
+    <a class="resume" href={resume || '/admin/'}>{resume ? 'Resume' : 'Admin'}</a>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 12px;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .nav-pill {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: .18rem;
+    border: 1px solid rgba(222,218,234,.95);
+    border-radius: 999px;
+    padding: .38rem;
+    background: rgba(255,255,255,.84);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 12px 34px rgba(40,33,59,.10);
+  }
+  .nav-pill a {
+    color: var(--muted);
+    font-weight: 800;
+    border-radius: 999px;
+    padding: .65rem .85rem;
+    line-height: 1;
+    transition: color .2s ease, background .2s ease, transform .2s ease;
+  }
+  .nav-pill a:hover {
+    color: var(--ink);
+    background: rgba(152,0,255,.08);
+  }
+  .avatar-link {
+    width: 44px;
+    height: 44px;
+    padding: 0 !important;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    color: var(--violet) !important;
+    flex: 0 0 auto;
+  }
+  .avatar-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .resume {
+    background: var(--violet) !important;
+    color: white !important;
+    padding-inline: 1rem !important;
+  }
+  @media (max-width: 700px) {
+    .site-header { top: 8px; justify-content: flex-start; padding-left: .5rem; }
+    .nav-pill { max-width: calc(100vw - 1rem); overflow-x: auto; scrollbar-width: none; }
+    .nav-pill::-webkit-scrollbar { display: none; }
+    .nav-pill a { font-size: .88rem; padding: .55rem .62rem; white-space: nowrap; }
+    .avatar-link { width: 38px; height: 38px; min-width: 38px; }
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import SectionTitle from '../../components/SectionTitle.astro';
+
+const profiles = await getCollection('profile');
+const profile = profiles[0];
+const projects = (await getCollection('projects', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout title="Projects" description="Portfolio project case studies" profile={profile}>
+  <section class="section projects-page">
+    <span class="purple-dot"></span>
+    <div class="container">
+      <SectionTitle title="Projects" text="Every published project added in the admin dashboard appears here as a clickable case study." />
+      <div class="project-list">
+        {projects.length ? projects.map((project) => <ProjectCard project={project} href={`/projects/${project.id}/`} />) : <div class="soft-card empty-state">Add projects from Admin -> Projects.</div>}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .projects-page { padding-top: 7rem; }
+  .purple-dot { left: 5vw; top: 9rem; }
+  .project-list { display: grid; gap: 3rem; }
+  .empty-state { padding: 1.5rem; color: var(--muted); font-weight: 800; }
+</style>

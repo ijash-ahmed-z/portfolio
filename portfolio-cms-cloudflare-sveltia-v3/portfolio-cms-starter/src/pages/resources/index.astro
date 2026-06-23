@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionTitle from '../../components/SectionTitle.astro';
+const profiles = await getCollection('profile');
+const profile = profiles[0];
+const docs = (await getCollection('documents', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+const certificates = (await getCollection('certificates', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout title="Resources" description="Resume, documents and portfolio resources" profile={profile}>
+  <section class="section resources-page">
+    <span class="purple-dot"></span>
+    <div class="container">
+      <SectionTitle title="Resources" text="Resume PDFs, case studies, reports, certificates and downloadable documents managed from the admin dashboard." />
+      <div class="resource-grid">
+        {docs.length ? docs.map((doc) => (
+          <article class="resource-card soft-card">
+            <span>{doc.data.type}</span>
+            <h2>{doc.data.title}</h2>
+            <p>{doc.data.description}</p>
+            <div class="tag-row">
+              {doc.data.tags.map((tag) => <small>{tag}</small>)}
+            </div>
+            <div class="card-actions">
+              {doc.data.file && <a class="button-primary" href={doc.data.file} target="_blank" rel="noreferrer">Open Document ↗</a>}
+              {doc.data.externalUrl && <a class="button-secondary" href={doc.data.externalUrl} target="_blank" rel="noreferrer">External Link ↗</a>}
+            </div>
+          </article>
+        )) : <div class="soft-card empty-state">Add documents from Admin -> Documents / Resources.</div>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section cert-resource-section">
+    <div class="container">
+      <SectionTitle title="Certificate Library" text="Certificate images and files can be managed separately from the Certificates collection." />
+      <div class="certificate-list">
+        {certificates.length ? certificates.map((cert) => (
+          <article class="certificate-row soft-card">
+            {cert.data.image ? <img src={cert.data.image} alt={`${cert.data.title} certificate`} loading="lazy" /> : <div class="cert-placeholder">Certificate</div>}
+            <div>
+              <p class="kicker">{cert.data.issuer || 'Certificate'}</p>
+              <h2>{cert.data.title}</h2>
+              {cert.data.issuedDate && <p>Issued: {cert.data.issuedDate}</p>}
+              <div class="tag-row">{cert.data.skills.map((skill) => <small>{skill}</small>)}</div>
+              <div class="card-actions">
+                {cert.data.file && <a class="button-primary" href={cert.data.file} target="_blank" rel="noreferrer">Open PDF</a>}
+                {cert.data.url && <a class="button-secondary" href={cert.data.url} target="_blank" rel="noreferrer">Verify ↗</a>}
+              </div>
+            </div>
+          </article>
+        )) : <div class="soft-card empty-state">Add certificates from Admin -> Certificates.</div>}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .resources-page { padding-top: 7rem; }
+  .purple-dot { left: 5vw; top: 8rem; }
+  .resource-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1.5rem; }
+  .resource-card { padding: 1.5rem; display: grid; gap: .7rem; align-content: start; }
+  .resource-card > span { color: var(--violet); font-weight: 900; text-transform: uppercase; font-size: .85rem; letter-spacing: .08em; }
+  .resource-card h2, .certificate-row h2 { margin: 0; line-height: 1.15; }
+  .resource-card p, .certificate-row p { color: var(--muted); margin: 0; }
+  .card-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .5rem; }
+  .button-primary, .button-secondary { width: fit-content; }
+  .certificate-list { display: grid; gap: 1.5rem; }
+  .certificate-row { display: grid; grid-template-columns: 280px 1fr; gap: 1.4rem; padding: 1rem; align-items: center; }
+  .certificate-row img, .cert-placeholder { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 20px; background: white; }
+  .cert-placeholder { display: grid; place-items: center; color: var(--muted); font-weight: 900; }
+  .empty-state { padding: 1.5rem; color: var(--muted); font-weight: 800; }
+  @media (max-width: 850px) { .resource-grid, .certificate-row { grid-template-columns: 1fr; } }
+</style>

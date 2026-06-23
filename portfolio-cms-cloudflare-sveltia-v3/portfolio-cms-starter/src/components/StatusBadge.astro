@@ -1,0 +1,17 @@
+---
+const { profile } = Astro.props;
+const avatar = profile?.data?.avatar || '';
+const status = profile?.data?.status || 'Available';
+---
+<div class="status-badge pill">
+  {avatar ? <img src={avatar} alt="" width="34" height="34" /> : <span class="initial">✓</span>}
+  <span>{status}</span>
+  <i aria-hidden="true"></i>
+</div>
+
+<style>
+  .status-badge { font-weight: 800; color: var(--muted); width: fit-content; }
+  .status-badge img, .initial { width: 34px; height: 34px; border-radius: 999px; object-fit: cover; }
+  .initial { display: grid; place-items: center; background: var(--paper); color: var(--violet); }
+  .status-badge i { width: 8px; height: 8px; background: var(--green); border-radius: 999px; }
+</style>

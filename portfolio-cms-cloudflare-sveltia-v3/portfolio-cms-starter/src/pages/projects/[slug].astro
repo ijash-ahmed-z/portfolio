@@ -1,0 +1,158 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => data.published !== false);
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const profiles = await getCollection('profile');
+const profile = profiles[0];
+const projects = (await getCollection('projects', ({ data }) => data.published !== false))
+  .filter((item) => item.id !== project.id)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 2);
+const data = project.data;
+const gallery = data.gallery || [];
+const hasBody = project.body?.trim().length > 0;
+const seoTitle = data.seoTitle || data.title;
+const seoDescription = data.seoDescription || data.excerpt;
+---
+<BaseLayout title={seoTitle} description={seoDescription} profile={profile}>
+  <article class="project-page">
+    <section class="project-hero section">
+      <span class="purple-dot hero-dot"></span>
+      <div class="container">
+        <a class="back-link" href="/projects/">← All projects</a>
+        <h1 class="display-title">{data.title}</h1>
+        <p class="body-large intro">{data.excerpt}</p>
+        <div class="meta-grid">
+          <div><span>Tools :</span><strong>{data.tools.length ? data.tools.join(', ') : 'Add tools'}</strong></div>
+          <div><span>Dataset :</span><strong>{data.dataset || 'Add dataset'}</strong></div>
+          <div><span>Techniques :</span><strong>{data.techniques.length ? data.techniques.join(', ') : 'Add techniques'}</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container media-stack" aria-label="Project screenshots">
+      {data.cover ? (
+        <figure class="media-figure cover-figure">
+          <img src={data.cover} alt={data.coverAlt || `${data.title} cover`} loading="eager" />
+        </figure>
+      ) : <div class="image-placeholder">Upload project cover</div>}
+      {gallery.map((shot, index) => (
+        <figure class="media-figure">
+          <img src={shot.image} alt={shot.alt || shot.caption || `${data.title} screenshot ${index + 1}`} loading="lazy" />
+          {shot.caption && <figcaption>{shot.caption}</figcaption>}
+        </figure>
+      ))}
+    </section>
+
+    {(data.problem || data.approach.length > 0) && (
+      <section class="container project-section two-blocks">
+        {data.problem && (
+          <div>
+            <h2 class="display-title">Problem :</h2>
+            <p>{data.problem}</p>
+          </div>
+        )}
+        {data.approach.length > 0 && (
+          <div>
+            <h2 class="display-title">Approach :</h2>
+            <ul>
+              {data.approach.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        )}
+      </section>
+    )}
+
+    {data.insights.length > 0 && (
+      <section class="container project-section insight-block soft-card">
+        <p class="kicker">Case study output</p>
+        <h2 class="display-title">What Data Delivers:</h2>
+        <ul class="insights">
+          {data.insights.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {hasBody && (
+      <section class="container project-section prose-content">
+        <Content />
+      </section>
+    )}
+
+    {data.growthNote && (
+      <section class="container project-section growth-note">
+        <h2 class="display-title">Growth Note :</h2>
+        <p>{data.growthNote}</p>
+      </section>
+    )}
+
+    {(data.github || data.liveDemo) && (
+      <section class="container cta-row">
+        {data.github && <a class="github-cta" href={data.github} target="_blank" rel="noreferrer">GitHub Link <span>↗</span></a>}
+        {data.liveDemo && <a class="github-cta secondary" href={data.liveDemo} target="_blank" rel="noreferrer">Live Demo <span>↗</span></a>}
+      </section>
+    )}
+
+    {projects.length > 0 && (
+      <section class="container more-projects">
+        <h2 class="display-title">More Projects</h2>
+        <div class="more-grid">
+          {projects.map((item) => <ProjectCard project={item} href={`/projects/${item.id}/`} />)}
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .project-page { padding-top: 1rem; }
+  .project-hero { padding-bottom: 2.5rem; }
+  .hero-dot { left: 5vw; top: 7rem; }
+  .back-link { display: inline-flex; margin-bottom: 1.6rem; color: var(--violet); font-weight: 900; }
+  .project-hero h1 { max-width: 1120px; font-size: clamp(4rem, 10vw, 8.8rem); margin: 0 0 1.6rem; }
+  .intro { max-width: 990px; }
+  .meta-grid { display: grid; grid-template-columns: .8fr .75fr 1.4fr; gap: 2rem; margin-top: 2.3rem; }
+  .meta-grid span { display: block; color: var(--muted); margin-bottom: .25rem; }
+  .meta-grid strong { color: var(--violet); font-size: 1.1rem; }
+
+  .media-stack { display: grid; gap: clamp(1.6rem, 4vw, 3rem); }
+  .media-figure { margin: 0; }
+  .media-figure img, .image-placeholder { width: 100%; border-radius: 26px; box-shadow: var(--card); background: white; }
+  .media-figure img { object-fit: cover; }
+  .cover-figure img { max-height: 760px; object-fit: cover; }
+  .image-placeholder { min-height: 420px; }
+  figcaption { color: var(--muted); font-size: .95rem; margin-top: .75rem; }
+
+  .project-section { padding: clamp(3rem, 6vw, 5rem) 0 0; }
+  .project-section h2, .more-projects h2 { font-size: clamp(2.8rem, 5.5vw, 4.8rem); margin: 0 0 1rem; }
+  .project-section p, .project-section li { color: var(--muted); font-size: clamp(1.05rem, 1.35vw, 1.2rem); }
+  .two-blocks { display: grid; gap: 3.5rem; }
+  .two-blocks ul, .insights { padding-left: 1.25rem; }
+  li { margin-bottom: .8rem; }
+  .insight-block { padding: clamp(1.4rem, 4vw, 3rem); margin-top: clamp(3rem, 6vw, 5rem); }
+  .insight-block h2 { margin-bottom: 1.2rem; }
+  .insights { display: grid; gap: .6rem; }
+  .prose-content :global(p), .prose-content :global(li) { color: var(--muted); font-size: 1.1rem; }
+  .prose-content :global(h2), .prose-content :global(h3) { font-family: Anton, Impact, 'Arial Narrow', sans-serif; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; }
+  .growth-note p { max-width: 980px; }
+
+  .cta-row { display: grid; gap: 1rem; padding-top: 3.5rem; }
+  .github-cta { min-height: 92px; border-radius: 24px; background: var(--violet); color: white; display: flex; justify-content: space-between; align-items: center; padding: 0 1.4rem; font-family: Anton, Impact, 'Arial Narrow', sans-serif; font-size: clamp(2rem, 4vw, 3.4rem); text-transform: uppercase; box-shadow: 0 18px 44px rgba(152,0,255,.20); }
+  .github-cta.secondary { background: var(--ink); }
+  .github-cta span { width: 52px; height: 52px; border: 3px solid white; border-radius: 999px; display: grid; place-items: center; font-family: Inter, sans-serif; font-size: 1.8rem; }
+
+  .more-projects { padding-top: 5rem; }
+  .more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+  @media (max-width: 850px) {
+    .meta-grid, .more-grid { grid-template-columns: 1fr; }
+    .project-hero h1 { font-size: clamp(4rem, 18vw, 6rem); }
+  }
+</style>

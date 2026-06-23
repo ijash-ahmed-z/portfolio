@@ -1,0 +1,255 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SkillPill from '../components/SkillPill.astro';
+
+const profiles = await getCollection('profile');
+const profile = profiles[0];
+const data = profile?.data || {
+  name: 'Your Name',
+  role: 'Portfolio Owner',
+  headline: 'Professional Portfolio',
+  tagline: 'Add your tagline from the admin dashboard.',
+  summary: 'Add your profile summary from the admin dashboard.',
+  heroImage: '',
+  avatar: '',
+  resume: '',
+  stats: [],
+  socials: []
+};
+
+const projects = (await getCollection('projects', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+const featuredProjects = projects.filter((project) => project.data.featured).slice(0, 3);
+const skills = (await getCollection('skills', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+const services = (await getCollection('services', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+const certificates = (await getCollection('certificates', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+const documents = (await getCollection('documents', ({ data }) => data.published !== false))
+  .sort((a, b) => a.data.order - b.data.order);
+const resumeHref = data.resume || documents.find((doc) => doc.data.type === 'Resume')?.data.file || '';
+const seoTitle = data.seoTitle || `${data.name} - ${data.role}`;
+const seoDescription = data.seoDescription || data.tagline || data.summary;
+---
+<BaseLayout title={seoTitle} description={seoDescription} profile={profile}>
+  <section class="hero section">
+    <span class="purple-dot dot-one"></span>
+    <div class="container hero-grid reveal">
+      <div class="hero-left">
+        <p class="kicker">{data.name}</p>
+        <h1 class="display-title">{data.headline}</h1>
+      </div>
+      <div class="hero-image-wrap">
+        {data.heroImage ? <img src={data.heroImage} alt={`${data.name} portrait`} width="520" height="700" /> : <div class="empty-portrait">Upload hero image</div>}
+        <div class="hi-bubble">Hi</div>
+      </div>
+      <div class="hero-right">
+        <h2 class="display-title">{data.role}</h2>
+        <p>{data.tagline}</p>
+        <div class="hero-actions">
+          <a class="button-primary" href="#projects">View Projects</a>
+          {resumeHref ? <a class="button-secondary" href={resumeHref} target="_blank" rel="noreferrer">Download Resume</a> : <a class="button-secondary" href="/admin/">Add Resume</a>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="section service-section">
+    <span class="purple-dot dot-two"></span>
+    <div class="container service-grid">
+      <div>
+        <StatusBadge profile={profile} />
+        <SectionTitle title="What I Can Do" text="Manage these capability sections from the admin panel. Use them for services, strengths, workflows or specialist areas." />
+        <div class="accordion-list">
+          {services.length ? services.map((service, index) => (
+            <details class="service-item" open={index === 0}>
+              <summary>
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <strong class="display-title">{service.data.title}</strong>
+              </summary>
+              {service.data.summary && <p>{service.data.summary}</p>}
+              {service.data.points.length > 0 && (
+                <ul>
+                  {service.data.points.map((point) => <li>{point}</li>)}
+                </ul>
+              )}
+            </details>
+          )) : <div class="soft-card empty-state">Add capability sections from Admin -> What I Can Do.</div>}
+        </div>
+      </div>
+      <div class="floating-portrait">
+        {data.heroImage ? <img src={data.heroImage} alt="" loading="lazy" /> : <div class="empty-portrait">Upload portrait</div>}
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section about-section">
+    <div class="container about-grid">
+      <div>
+        <SectionTitle title="About Me" />
+        <p class="body-large about-copy">{data.summary}</p>
+        {data.location && <p class="location-line">Location: <strong>{data.location}</strong></p>}
+        <div class="stats">
+          {(data.stats || []).map((stat) => (
+            <div>
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </div>
+          ))}
+        </div>
+        <div class="contact-row">
+          {data.phone && <a href={`tel:${data.phone}`}><span>Call Today :</span>{data.phone}</a>}
+          {data.email && <a href={`mailto:${data.email}`}><span>Email :</span>{data.email} ↗</a>}
+        </div>
+        <div class="social-row">
+          {(data.socials || []).map((social) => <a href={social.url} target="_blank" rel="noreferrer">{social.label} ↗</a>)}
+        </div>
+      </div>
+      <div class="about-portrait">
+        {data.heroImage ? <img src={data.heroImage} alt="" loading="lazy" /> : <div class="empty-portrait">Upload portrait</div>}
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="section skill-section">
+    <div class="container">
+      <SectionTitle title="My Tech Stack" text="Add icons, categories, levels and tags from the private admin dashboard." />
+      <div class="skill-grid">
+        {skills.length ? skills.map((skill) => <SkillPill skill={skill} />) : <div class="soft-card empty-state">Add skills from Admin -> Skills.</div>}
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="section projects-section">
+    <span class="purple-dot dot-three"></span>
+    <div class="container">
+      <div class="section-head-row">
+        <SectionTitle title="Featured Projects" />
+        <a class="button-secondary" href="/projects/">All Projects</a>
+      </div>
+      <div class="featured-list">
+        {(featuredProjects.length ? featuredProjects : projects.slice(0, 3)).map((project) => (
+          <ProjectCard project={project} href={`/projects/${project.id}/`} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="resources" class="section resume-section">
+    <div class="container resume-card soft-card">
+      <div>
+        <p class="kicker">Resources</p>
+        <h2 class="display-title">Resume and Documents</h2>
+        <p class="body-large">Upload resume PDFs, case studies, reports and other resources from the admin panel. Published resources appear on the Resources page.</p>
+      </div>
+      <div class="resume-actions">
+        {resumeHref ? <a class="button-primary" href={resumeHref} target="_blank" rel="noreferrer">Download Resume ↗</a> : <a class="button-primary" href="/admin/">Upload Resume</a>}
+        <a class="button-secondary" href="/resources/">View Resources</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="certificates" class="section cert-section">
+    <div class="container">
+      <SectionTitle title="Certifications" text="Upload certificate images or PDFs from the admin system. Published certificates appear here automatically." />
+      <div class="cert-grid">
+        {certificates.length ? certificates.map((cert) => (
+          <article class="cert-card">
+            {cert.data.image ? <img src={cert.data.image} alt={`${cert.data.title} certificate`} loading="lazy" /> : <div class="cert-placeholder">Certificate Image</div>}
+            <div class="cert-body">
+              <p class="kicker">{cert.data.issuer || 'Certificate'}</p>
+              <h3 class="display-title">{cert.data.title}</h3>
+              {cert.data.issuedDate && <p class="cert-date">Issued: {cert.data.issuedDate}</p>}
+              <div class="tag-row">
+                {cert.data.skills.map((skill) => <span>{skill}</span>)}
+              </div>
+              <div class="cert-actions">
+                {cert.data.file && <a class="button-ghost" href={cert.data.file} target="_blank" rel="noreferrer">Open PDF</a>}
+                {cert.data.url && <a class="button-ghost" href={cert.data.url} target="_blank" rel="noreferrer">Verify ↗</a>}
+              </div>
+            </div>
+          </article>
+        )) : <div class="soft-card empty-state">Add certificates from Admin -> Certificates.</div>}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { min-height: 88vh; display: grid; align-items: center; padding-top: 2rem; }
+  .hero-grid { display: grid; grid-template-columns: 1fr minmax(240px, 350px) 1fr; align-items: center; gap: clamp(1rem, 3vw, 2rem); }
+  .hero h1, .hero h2 { font-size: clamp(5rem, 11vw, 9.4rem); margin: 0; }
+  .hero-left { text-align: right; }
+  .hero-right p { color: var(--muted); max-width: 330px; font-size: 1.1rem; line-height: 1.55; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.5rem; }
+  .hero-image-wrap { position: relative; border-radius: 26px; min-height: 470px; }
+  .hero-image-wrap img, .hero-image-wrap .empty-portrait { width: 100%; height: 470px; object-fit: cover; border-radius: 26px; background: linear-gradient(135deg, #cdd5d7, #eef0f4); box-shadow: var(--card); }
+  .hi-bubble { position: absolute; left: -70px; bottom: -58px; width: 120px; height: 120px; border-radius: 999px; background: var(--violet); color: white; display: grid; place-items: center; font-size: 2.3rem; box-shadow: 0 18px 48px rgba(152,0,255,.28); }
+  .dot-one { left: 7vw; top: 11vh; }
+  .dot-two { left: 6vw; top: 18%; }
+  .dot-three { left: 5vw; top: 9%; }
+
+  .service-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(3rem, 7vw, 7rem); align-items: center; }
+  .accordion-list { display: grid; gap: .4rem; }
+  .service-item { border-bottom: 1px solid var(--line); padding: 1.15rem 0; }
+  .service-item summary { list-style: none; display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 1rem; cursor: pointer; }
+  .service-item summary::-webkit-details-marker { display: none; }
+  .service-item summary::after { content: '+'; color: var(--ink); font-size: 1.8rem; line-height: 1; }
+  .service-item[open] summary::after { content: '-'; color: var(--violet); }
+  .service-item summary span { color: var(--violet); font-weight: 900; font-size: 1.35rem; }
+  .service-item summary strong { font-size: clamp(2rem, 4.4vw, 3.2rem); }
+  .service-item p, .service-item li { color: var(--muted); }
+  .service-item ul { display: grid; gap: .5rem; margin: 1rem 0 0; padding-left: 1.3rem; }
+  .floating-portrait img, .floating-portrait .empty-portrait { min-height: 520px; height: 520px; width: 100%; object-fit: cover; border-radius: 30px; transform: rotate(6deg); box-shadow: var(--card); }
+
+  .about-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(3rem, 7vw, 7rem); align-items: center; }
+  .about-copy { max-width: 690px; }
+  .location-line { color: var(--muted); }
+  .location-line strong { color: var(--ink); }
+  .about-portrait img, .about-portrait .empty-portrait { height: 560px; width: 100%; border-radius: 30px; object-fit: cover; transform: rotate(5deg); box-shadow: var(--card); }
+  .stats { display: flex; flex-wrap: wrap; gap: 2rem 4rem; margin: 2rem 0; }
+  .stats strong { display: block; color: var(--violet); font-size: clamp(3rem, 6vw, 4.8rem); line-height: 1; font-weight: 900; }
+  .stats span { font-weight: 900; }
+  .contact-row, .social-row { display: flex; flex-wrap: wrap; gap: 1.2rem 3rem; margin-top: 1.5rem; }
+  .contact-row span { display: block; color: var(--ink); font-weight: 900; }
+  .contact-row a, .social-row a { color: var(--muted); font-weight: 800; }
+
+  .skill-grid { display: flex; flex-wrap: wrap; gap: 1.15rem; }
+  .section-head-row { display: flex; justify-content: space-between; gap: 1rem; align-items: start; }
+  .featured-list { display: grid; gap: 3rem; }
+
+  .resume-card { padding: clamp(1.4rem, 4vw, 3rem); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2rem; }
+  .resume-card h2 { font-size: clamp(3rem, 6vw, 5.4rem); margin: 0; }
+  .resume-actions { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: flex-end; }
+
+  .cert-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+  .cert-card { display: grid; gap: 1rem; }
+  .cert-card img, .cert-placeholder { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 22px; background: white; box-shadow: var(--card-soft); }
+  .cert-body { display: grid; gap: .65rem; }
+  .cert-card h3 { font-size: clamp(2rem, 4vw, 3.5rem); margin: 0; }
+  .cert-date { color: var(--muted); margin: 0; }
+  .cert-actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .4rem; }
+  .empty-state { padding: 1.5rem; color: var(--muted); font-weight: 800; }
+
+  @media (max-width: 950px) {
+    .hero-grid, .service-grid, .about-grid, .cert-grid, .resume-card { grid-template-columns: 1fr; }
+    .hero-left, .hero-right { text-align: left; }
+    .hero-image-wrap { max-width: 320px; margin-inline: auto; transform: rotate(-4deg); }
+    .hi-bubble { width: 92px; height: 92px; left: -36px; bottom: -34px; }
+    .floating-portrait, .about-portrait { max-width: 360px; margin-inline: auto; }
+    .floating-portrait { order: -1; }
+    .resume-actions { justify-content: flex-start; }
+  }
+  @media (max-width: 620px) {
+    .hero h1, .hero h2 { font-size: clamp(4rem, 20vw, 6rem); }
+    .stats { flex-direction: column; }
+    .section-head-row { flex-direction: column; }
+    .service-item summary { grid-template-columns: 44px 1fr auto; }
+    .service-item summary strong { font-size: 2rem; }
+  }
+</style>

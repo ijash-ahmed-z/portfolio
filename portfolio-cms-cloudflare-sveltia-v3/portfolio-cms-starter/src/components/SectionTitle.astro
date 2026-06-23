@@ -1,0 +1,14 @@
+---
+const { eyebrow = '', title, text = '' } = Astro.props;
+---
+<div class="section-title">
+  {eyebrow && <p class="kicker">{eyebrow}</p>}
+  <h2 class="display-title">{title}</h2>
+  {text && <p class="body-large">{text}</p>}
+</div>
+
+<style>
+  .section-title { max-width: 780px; margin-bottom: clamp(2rem, 4vw, 3rem); }
+  .section-title h2 { font-size: clamp(3.2rem, 7vw, 5.8rem); margin: 0; }
+  .section-title p:last-child { margin: .75rem 0 0; }
+</style>

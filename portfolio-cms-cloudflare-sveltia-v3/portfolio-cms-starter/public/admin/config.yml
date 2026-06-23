@@ -1,0 +1,195 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME
+  branch: main
+
+local_backend: true
+# Direct publishing is easiest for a solo portfolio admin.
+# To add a draft workflow later, use a published/draft field in content or configure branch workflows.
+media_folder: public/uploads
+public_folder: /uploads
+site_url: https://YOUR_PROJECT.pages.dev
+display_url: https://YOUR_PROJECT.pages.dev
+
+collections:
+  - name: profile
+    label: Personal Profile
+    delete: false
+    files:
+      - file: src/content/profile/main.md
+        name: main
+        label: Main Profile
+        fields:
+          - { label: Name, name: name, widget: string }
+          - { label: Role, name: role, widget: string }
+          - { label: Status Badge, name: status, widget: string, required: false, default: "Available" }
+          - { label: Hero Headline, name: headline, widget: string, hint: "Example: Data, Designer, Developer" }
+          - { label: Tagline, name: tagline, widget: text, required: false }
+          - { label: Summary, name: summary, widget: text }
+          - { label: Avatar, name: avatar, widget: image, required: false }
+          - { label: Hero / Portrait Image, name: heroImage, widget: image, required: false }
+          - { label: Resume PDF, name: resume, widget: file, required: false }
+          - { label: Email, name: email, widget: string, required: false }
+          - { label: Phone, name: phone, widget: string, required: false }
+          - { label: Location, name: location, widget: string, required: false }
+          - label: Stats
+            name: stats
+            widget: list
+            required: false
+            fields:
+              - { label: Value, name: value, widget: string }
+              - { label: Label, name: label, widget: string }
+          - label: Social Links
+            name: socials
+            widget: list
+            required: false
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: url, widget: string }
+          - { label: SEO Title, name: seoTitle, widget: string, required: false }
+          - { label: SEO Description, name: seoDescription, widget: text, required: false }
+          - { label: Body, name: body, widget: markdown, required: false }
+
+  - name: services
+    label: What I Can Do
+    label_singular: Capability
+    folder: src/content/services
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: [order, title]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Summary, name: summary, widget: text, required: false }
+      - label: Bullet Points
+        name: points
+        widget: list
+        required: false
+        field: { label: Point, name: point, widget: string }
+      - { label: Icon, name: icon, widget: image, required: false }
+      - { label: Published, name: published, widget: boolean, default: true, required: false }
+      - { label: Display Order, name: order, widget: number, value_type: int, required: false, default: 999 }
+      - { label: Notes, name: body, widget: markdown, required: false }
+
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: src/content/projects
+    create: true
+    slug: "{{slug}}"
+    preview_path: "projects/{{slug}}"
+    summary: "{{title}} - {{category}}"
+    sortable_fields: [order, title, category]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Category, name: category, widget: string, required: false, default: Project }
+      - { label: Short Summary, name: excerpt, widget: text }
+      - { label: Cover Image, name: cover, widget: image, required: false }
+      - { label: Cover Alt Text, name: coverAlt, widget: string, required: false }
+      - label: Gallery / Screenshots
+        name: gallery
+        widget: list
+        required: false
+        summary: "{{fields.caption}}"
+        fields:
+          - { label: Image, name: image, widget: image }
+          - { label: Caption, name: caption, widget: string, required: false }
+          - { label: Alt Text, name: alt, widget: string, required: false }
+      - { label: Tools, name: tools, widget: list, required: false, field: { label: Tool, name: tool, widget: string } }
+      - { label: Dataset, name: dataset, widget: string, required: false }
+      - { label: Techniques, name: techniques, widget: list, required: false, field: { label: Technique, name: technique, widget: string } }
+      - { label: Problem, name: problem, widget: text, required: false }
+      - { label: Approach, name: approach, widget: list, required: false, field: { label: Step, name: step, widget: text } }
+      - { label: What Data Delivers, name: insights, widget: list, required: false, field: { label: Insight, name: insight, widget: text } }
+      - { label: Growth Note, name: growthNote, widget: text, required: false }
+      - { label: GitHub URL, name: github, widget: string, required: false }
+      - { label: Live Demo URL, name: liveDemo, widget: string, required: false }
+      - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string } }
+      - { label: Featured on Home, name: featured, widget: boolean, default: false, required: false }
+      - { label: Published, name: published, widget: boolean, default: true, required: false }
+      - { label: Display Order, name: order, widget: number, value_type: int, required: false, default: 999 }
+      - { label: SEO Title, name: seoTitle, widget: string, required: false }
+      - { label: SEO Description, name: seoDescription, widget: text, required: false }
+      - { label: Page Body, name: body, widget: markdown, required: false }
+
+  - name: skills
+    label: Skills
+    label_singular: Skill
+    folder: src/content/skills
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}} - {{category}}"
+    sortable_fields: [order, title, category]
+    fields:
+      - { label: Skill Name, name: title, widget: string }
+      - { label: Category, name: category, widget: string, required: false }
+      - { label: Icon, name: icon, widget: image, required: false }
+      - { label: Level, name: level, widget: string, required: false }
+      - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string } }
+      - { label: Published, name: published, widget: boolean, default: true, required: false }
+      - { label: Display Order, name: order, widget: number, value_type: int, required: false, default: 999 }
+      - { label: Description, name: body, widget: markdown, required: false }
+
+  - name: certificates
+    label: Certificates
+    label_singular: Certificate
+    folder: src/content/certificates
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}} - {{issuer}}"
+    sortable_fields: [order, title, issuer]
+    fields:
+      - { label: Certificate Title, name: title, widget: string }
+      - { label: Issuer, name: issuer, widget: string, required: false }
+      - { label: Certificate Image, name: image, widget: image, required: false }
+      - { label: Certificate PDF/File, name: file, widget: file, required: false }
+      - { label: Issued Date, name: issuedDate, widget: string, required: false }
+      - { label: Verification URL, name: url, widget: string, required: false }
+      - { label: Skills, name: skills, widget: list, required: false, field: { label: Skill, name: skill, widget: string } }
+      - { label: Published, name: published, widget: boolean, default: true, required: false }
+      - { label: Display Order, name: order, widget: number, value_type: int, required: false, default: 999 }
+      - { label: Notes, name: body, widget: markdown, required: false }
+
+  - name: documents
+    label: Documents / Resources
+    label_singular: Document
+    folder: src/content/documents
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}} - {{type}}"
+    sortable_fields: [order, title, type]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: Type
+        name: type
+        widget: select
+        options: [Resume, Case Study, Report, Certificate, Other]
+        default: Other
+      - { label: Description, name: description, widget: text, required: false }
+      - { label: File Upload, name: file, widget: file, required: false }
+      - { label: External URL, name: externalUrl, widget: string, required: false }
+      - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string } }
+      - { label: Published, name: published, widget: boolean, default: true, required: false }
+      - { label: Display Order, name: order, widget: number, value_type: int, required: false, default: 999 }
+      - { label: Notes, name: body, widget: markdown, required: false }
+
+  - name: posts
+    label: Blog Posts / Articles
+    label_singular: Article
+    folder: src/content/posts
+    create: true
+    slug: "{{slug}}"
+    preview_path: "posts/{{slug}}"
+    summary: "{{title}} - {{date}}"
+    sortable_fields: [date, order, title]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Excerpt, name: excerpt, widget: text }
+      - { label: Date, name: date, widget: datetime, format: "YYYY-MM-DD" }
+      - { label: Cover Image, name: cover, widget: image, required: false }
+      - { label: Tags, name: tags, widget: list, required: false, field: { label: Tag, name: tag, widget: string } }
+      - { label: Published, name: published, widget: boolean, default: true, required: false }
+      - { label: Display Order, name: order, widget: number, value_type: int, required: false, default: 999 }
+      - { label: SEO Title, name: seoTitle, widget: string, required: false }
+      - { label: SEO Description, name: seoDescription, widget: text, required: false }
+      - { label: Article Body, name: body, widget: markdown }

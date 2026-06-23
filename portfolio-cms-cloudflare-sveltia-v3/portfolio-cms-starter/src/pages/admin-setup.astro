@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Admin Setup">
+  <main class="section narrow">
+    <p class="eyebrow">Admin setup</p>
+    <h1>GitHub + Cloudflare Pages Admin</h1>
+    <p>
+      This project uses Sveltia CMS for the private input dashboard. Content is saved to GitHub, and Cloudflare Pages rebuilds the public website after each save.
+    </p>
+    <div class="card mt-4">
+      <h2>Setup checklist</h2>
+      <ol class="rich-list">
+        <li>Upload the project to GitHub.</li>
+        <li>Edit <code>public/admin/config.yml</code> and set <code>repo</code> to your GitHub username/repo.</li>
+        <li>Deploy the repository on Cloudflare Pages.</li>
+        <li>Open <code>/admin</code> and sign in with a GitHub token.</li>
+        <li>Add profile, projects, screenshots, certificates, documents, resume, and posts.</li>
+      </ol>
+      <p>Full instructions are in <code>CLOUDFLARE_GITHUB_ADMIN_SETUP.md</code>.</p>
+    </div>
+  </main>
+</BaseLayout>
