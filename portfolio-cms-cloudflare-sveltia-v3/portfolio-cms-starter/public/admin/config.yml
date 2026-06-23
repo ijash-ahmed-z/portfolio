@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: ijashahmedz/portfolio
+  repo: ijash-ahmed-z/portfolio
   branch: main
 
 local_backend: true
