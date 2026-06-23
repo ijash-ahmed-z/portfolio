@@ -1,6 +1,13 @@
 ---
 const { profile } = Astro.props;
 const data = profile?.data || {};
+
+type SocialLink = {
+  label: string;
+  url: string;
+};
+
+const socials: SocialLink[] = Array.isArray(data.socials) ? data.socials : [];
 ---
 <footer class="footer">
   <div class="container footer-grid">
@@ -15,7 +22,7 @@ const data = profile?.data || {};
     <div>
       <span>Social :</span>
       <div class="socials">
-        {(data.socials || []).map((social) => <a href={social.url} target="_blank" rel="noreferrer">{social.label} ↗</a>)}
+        {socials.map((social) => <a href={social.url} target="_blank" rel="noreferrer">{social.label} ↗</a>)}
       </div>
     </div>
   </div>
