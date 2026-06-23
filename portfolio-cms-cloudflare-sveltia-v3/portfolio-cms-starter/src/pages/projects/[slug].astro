@@ -18,7 +18,7 @@ const projects = (await getCollection('projects', ({ data }) => data.published !
   .slice(0, 2);
 const data = project.data;
 const gallery = data.gallery || [];
-const hasBody = project.body?.trim().length > 0;
+const hasBody = (project.body ?? '').trim().length > 0;
 const seoTitle = data.seoTitle || data.title;
 const seoDescription = data.seoDescription || data.excerpt;
 ---
